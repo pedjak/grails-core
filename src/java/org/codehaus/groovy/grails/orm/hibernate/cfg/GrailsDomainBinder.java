@@ -397,7 +397,7 @@ public final class GrailsDomainBinder {
           Map<?, ?> persistentClasses, Collection collection) {
 
         PersistentClass associatedClass = null;
-
+        collection.getCollectionTable().setName(namingStrategy.tableName(collection.getCollectionTable().getName()));
         if (LOG.isDebugEnabled())
             LOG.debug("Mapping collection: "
                     + collection.getRole()
@@ -970,7 +970,7 @@ public final class GrailsDomainBinder {
             Collection collection, Table ownerTable) {
 
         String prefix = ownerTable.getSchema();
-        String tableName = (prefix == null ? "" : prefix + '.') + calculateTableForMany(property);
+        String tableName = namingStrategy.tableName((prefix == null ? "" : prefix + '.') + calculateTableForMany(property));
         Table t = mappings.addTable(
                 mappings.getSchemaName(),
                 mappings.getCatalogName(),
@@ -1273,7 +1273,7 @@ public final class GrailsDomainBinder {
         Table mytable = mappings.addTable(
                 mappings.getSchemaName(),
                 mappings.getCatalogName(),
-                getJoinedSubClassTableName(sub, joinedSubclass, null, mappings),
+                namingStrategy.tableName(getJoinedSubClassTableName(sub, joinedSubclass, null, mappings)),
                 null,
                 false);
 
@@ -1298,7 +1298,7 @@ public final class GrailsDomainBinder {
             Mappings mappings) {
 
         String logicalTableName = StringHelper.unqualify(model.getEntityName());
-        String physicalTableName = getTableName(sub);
+        String physicalTableName = namingStrategy.tableName(getTableName(sub));
 
         mappings.addTableBinding(mappings.getSchemaName(), mappings.getCatalogName(), logicalTableName, physicalTableName, denormalizedSuperTable);
         return physicalTableName;
@@ -1418,7 +1418,7 @@ public final class GrailsDomainBinder {
         Table table = mappings.addTable(
                 schema,
                 catalog,
-                getTableName(domainClass),
+                namingStrategy.tableName(getTableName(domainClass)),
                 null,
                 false
         );
